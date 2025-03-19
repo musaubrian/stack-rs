@@ -7,11 +7,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
 
-    use stac::stac;
-
-    use crate::stac::stac::{Node, Stac};
-
-    use super::*;
+    use crate::stac::stac::Stac;
 
     #[test]
     fn new_stack() {
@@ -24,30 +20,53 @@ mod tests {
     fn push_stack() {
         let ss = 2;
         let stac = Stac::<u32>::new(ss);
-        let node = Node::<u32>::new(4);
-        let res = stac.push(node);
+        let res = stac.push(4);
         assert!(res.is_ok());
     }
-
     #[test]
-    fn pop_stack() {
-        let ss = 2;
-        let stac = Stac::<u32>::new(ss);
-        let node = Node::<u32>::new(4);
-        assert!(stac.push(node).is_ok());
+    fn pop_empty_stack() {
+        let mut stac = Stac::<u8>::new(2);
+        let pop = stac.pop();
+        assert!(pop.is_err())
     }
 
     #[test]
-    fn peek_stack() {
+    fn pop_non_empty_stack() {
+        let ss = 2;
+        let stac = Stac::<u32>::new(ss);
+        assert!(stac.push(4).is_ok());
+        // TODO: Same as here
+        //assert!(stac.pop().is_ok());
+    }
+
+    #[test]
+    fn peek_empty_stack() {
         let ss = 2;
         let stac = Stac::<String>::new(ss);
         let head = stac.peek();
         assert!(head.is_none());
-
-        stac.push(Node::<String>::new("Yellow".to_string()));
-        assert!(head.is_some(), "Expected head to not be None");
+    }
+    #[test]
+    fn peek_non_empty_stack() {
+        // TODO: Figure out how to get it to not
+        // move, tried to use reference but it somehow broke
+        //
+        //
+        //
+        //let ss = 2;
+        //let mut stac = Stac::<String>::new(ss);
+        //let push = stac.push("Yellow".to_string());
+        //assert!(push.is_ok());
+        //let head = stac.peek();
+        //assert!(head.is_some())
+        assert!(false)
     }
 
     #[test]
-    fn max_size_exceeded() {}
+    fn max_size_exceeded() {
+        let ss = 0;
+        let stac = Stac::<String>::new(ss);
+        let head = stac.push("Hello".to_string());
+        assert!(head.is_err());
+    }
 }
