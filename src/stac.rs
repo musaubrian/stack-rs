@@ -1,15 +1,17 @@
 pub mod stac {
 
+    #[derive(Clone)]
     pub struct Node<T> {
         pub value: T,
         // Gotten from https://medium.com/better-programming/learning-rust-building-a-linked-list-102bcb08f93b
         pub prev: Option<Box<Node<T>>>,
     }
 
+    #[derive(Clone)]
     pub struct Stac<T> {
         pub max_size: usize,
         current_size: usize,
-        head: Option<Box<Node<T>>>,
+        head: Option<Node<T>>,
     }
 
     pub enum StacErr {
@@ -33,7 +35,7 @@ pub mod stac {
             }
         }
 
-        pub fn push(mut self, value: T) -> Result<(), StacErr> {
+        pub fn push(mut self, value: T) -> Result<Stac<T>, StacErr> {
             self.current_size += 1;
             if self.current_size > self.max_size {
                 return Err(StacErr::MaxSizeExceeded);
@@ -42,28 +44,37 @@ pub mod stac {
 
             match self.head {
                 Some(head) => {
-                    node.prev = Some(head);
-                    self.head = Some(Box::new(node));
-                    Ok(())
+                    node.prev = Some(Box::new(head));
+                    self.head = Some(node);
+                    Ok(self)
                 }
                 None => {
-                    self.head = Some(Box::new(node));
-                    Ok(())
+                    self.head = Some(node);
+                    Ok(self)
                 }
             }
         }
 
-        pub fn pop(&mut self) -> Result<(), StacErr> {
+        pub fn pop(mut self) -> Result<Stac<T>, StacErr> {
             self.current_size -= 1;
             if self.current_size == 0 {
                 self.head = None;
-                return Err(StacErr::MaxSizeExceeded);
+                return Ok(self);
             }
-
-            Err(StacErr::Welp)
+            //	head := s.head
+            //	s.head = head.prev
+            //	Man pop is slightly harder
+            match &self.head {
+                Some(head) => {
+                    let curr_head = head;
+                    //self.head = *curr_head.prev;
+                    Ok(self)
+                }
+                None => Err(StacErr::EmptyStac),
+            }
         }
 
-        pub fn peek(self) -> Option<Box<Node<T>>> {
+        pub fn peek(self) -> Option<Node<T>> {
             return self.head;
         }
     }

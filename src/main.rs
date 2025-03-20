@@ -34,7 +34,10 @@ mod tests {
     fn pop_non_empty_stack() {
         let ss = 2;
         let stac = Stac::<u32>::new(ss);
-        assert!(stac.push(4).is_ok());
+        let pushed_st = stac.push(4);
+        assert!(pushed_st.is_ok());
+        let popd = pushed_st.pop();
+
         // TODO: Same as here
         //assert!(stac.pop().is_ok());
     }
